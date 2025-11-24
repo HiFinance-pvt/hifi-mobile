@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "47106022694",
+    "project_id": "hotcoffee-ce7b7",
+    "storage_bucket": "hotcoffee-ce7b7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:47106022694:android:af2f0f9ad9abb07efa75e7",
+        "android_client_info": {
+          "package_name": "mobile.hifi.click"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "47106022694-1r5t9fd5snuck2s4b3uknb5h3b3d2kso.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb2eYlWLmApns0fJMGGtXqJoOgQ2wfhWM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "47106022694-1r5t9fd5snuck2s4b3uknb5h3b3d2kso.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package mobile.hifi.click.hifi;
+package mobile.hifi.click;
 
 import io.flutter.embedding.android.FlutterActivity;
 
