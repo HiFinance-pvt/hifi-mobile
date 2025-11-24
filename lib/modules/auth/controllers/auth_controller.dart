@@ -76,7 +76,7 @@ class AuthController extends GetxController {
       }
 
       Get.snackbar('Success', 'Signed in successfully');
-      // Navigate to home screen when implemented
+      Get.offAllNamed(Routes.home);
       
     } catch (e) {
       Get.snackbar('Error', e.toString(), backgroundColor: Colors.red.shade100);
@@ -115,7 +115,25 @@ class AuthController extends GetxController {
       final result = await _authService.signInWithGoogle();
       if (result != null) {
         Get.snackbar('Success', 'Signed in with Google successfully');
-        // Navigate to home screen when implemented
+        Get.offAllNamed(Routes.home);
+      }
+      
+    } catch (e) {
+      Get.snackbar('Error', e.toString(), backgroundColor: Colors.red.shade100);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Sign in with Google (force account selection)
+  Future<void> signInWithGoogleForceSelection() async {
+    try {
+      isLoading.value = true;
+      
+      final result = await _authService.signInWithGoogleForceSelection();
+      if (result != null) {
+        Get.snackbar('Success', 'Signed in with Google successfully');
+        Get.offAllNamed(Routes.home);
       }
       
     } catch (e) {

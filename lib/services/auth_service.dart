@@ -45,6 +45,27 @@ class AuthService {
     }
   }
 
+  // Force Google account selection
+  Future<UserCredential?> signInWithGoogleForceSelection() async {
+    try {
+      // Sign out from Google first to force account selection
+      await _googleSignIn.signOut();
+      
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return null;
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      return await _auth.signInWithCredential(credential);
+    } catch (e) {
+      throw 'Google sign-in failed: ${e.toString()}';
+    }
+  }
+
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     try {

@@ -3,6 +3,8 @@ import 'package:hifi/modules/auth/bindings/auth_binding.dart';
 import 'package:hifi/modules/auth/views/signin_view.dart';
 import 'package:hifi/modules/auth/views/signup_view.dart';
 import 'package:hifi/modules/auth/views/forgot_password_view.dart';
+import 'package:hifi/modules/home/bindings/home_binding.dart';
+import 'package:hifi/modules/home/views/home_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -23,6 +25,11 @@ class AppPages {
       name: Routes.forgotPassword,
       page: () => const ForgotPasswordView(),
       binding: AuthBinding(),
+    ),
+    GetPage(
+      name: Routes.home,
+      page: () => const HomeView(),
+      binding: HomeBinding(),
     ),
   ];
 }

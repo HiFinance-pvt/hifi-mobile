@@ -119,6 +119,15 @@ class SignInView extends GetView<AuthController> {
                       : controller.signInWithGoogle,
                   isLoading: controller.isLoading.value,
                 )),
+                const SizedBox(height: 8),
+                
+                // Different Google account button
+                Obx(() => TextButton(
+                  onPressed: controller.isLoading.value 
+                      ? null 
+                      : controller.signInWithGoogleForceSelection,
+                  child: const Text('Use different Google account'),
+                )),
                 
                 const Spacer(),
 
