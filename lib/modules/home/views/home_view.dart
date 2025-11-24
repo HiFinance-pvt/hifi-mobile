@@ -42,6 +42,13 @@ class HomeView extends GetView<HomeController> {
                       'Sign-in method: ${controller.signInMethod.value}',
                       style: Theme.of(context).textTheme.bodyMedium,
                     )),
+                    const SizedBox(height: 8),
+                    Obx(() => Text(
+                      'Auth Token: ${controller.authToken.value}',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontFamily: 'monospace',
+                      ),
+                    )),
                   ],
                 ),
               ),

@@ -24,7 +24,7 @@ class SignInView extends GetView<AuthController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                const Spacer(),
+                const SizedBox(height: 60),
                 
                 // Logo/Title
                 Text(
@@ -135,7 +135,7 @@ class SignInView extends GetView<AuthController> {
                   child: const Text('Use different Google account'),
                 )),
                 
-                const Spacer(),
+                const SizedBox(height: 40),
 
                 // Sign up link
                 Row(

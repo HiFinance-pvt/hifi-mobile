@@ -7,6 +7,7 @@ class HomeController extends GetxController {
 
   final userEmail = ''.obs;
   final signInMethod = ''.obs;
+  final authToken = ''.obs;
 
   @override
   void onInit() {
@@ -14,7 +15,7 @@ class HomeController extends GetxController {
     _loadUserInfo();
   }
 
-  void _loadUserInfo() {
+  void _loadUserInfo() async {
     final user = _authService.currentUser;
     if (user != null) {
       userEmail.value = user.email ?? 'No email';
@@ -24,6 +25,22 @@ class HomeController extends GetxController {
         signInMethod.value = 'Google Sign-In';
       } else {
         signInMethod.value = 'Email/Password';
+      }
+      
+      // Get and mask auth token
+      try {
+        final token = await user.getIdToken();
+        if (token != null && token.isNotEmpty) {
+          // Mask token: show first 6 and last 6 characters
+          final maskedToken = token.length > 12 
+              ? '${token.substring(0, 6)}****${token.substring(token.length - 6)}'
+              : '${token.substring(0, 3)}****${token.substring(token.length - 3)}';
+          authToken.value = maskedToken;
+        } else {
+          authToken.value = 'No token';
+        }
+      } catch (e) {
+        authToken.value = 'Token error';
       }
     }
   }

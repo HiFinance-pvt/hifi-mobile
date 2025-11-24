@@ -129,7 +129,7 @@ class SignUpView extends GetView<AuthController> {
                   isLoading: controller.isLoading.value,
                 )),
                 
-                const Spacer(),
+                const SizedBox(height: 40),
 
                 // Sign in link
                 Row(

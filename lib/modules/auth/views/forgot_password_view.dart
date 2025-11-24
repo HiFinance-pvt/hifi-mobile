@@ -79,7 +79,7 @@ class ForgotPasswordView extends GetView<AuthController> {
                       : const Text('Send Reset Email'),
                 )),
                 
-                const Spacer(),
+                const SizedBox(height: 60),
 
                 // Back to sign in
                 TextButton(
