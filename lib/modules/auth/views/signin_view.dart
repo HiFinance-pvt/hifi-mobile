@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hifi/modules/auth/controllers/auth_controller.dart';
 import 'package:hifi/modules/auth/widgets/auth_text_field.dart';
 import 'package:hifi/modules/auth/widgets/google_sign_in_button.dart';
+import 'package:hifi/shared/themes/app_theme.dart';
 
 class SignInView extends GetView<AuthController> {
   const SignInView({super.key});
@@ -10,145 +11,208 @@ class SignInView extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: controller.signInFormKey,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height - 
-                    MediaQuery.of(context).padding.top - 
-                    MediaQuery.of(context).padding.bottom - 48,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                const SizedBox(height: 60),
-                
-                // Logo/Title
-                Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to your account',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-
-                // Email field
-                AuthTextField(
-                  controller: controller.emailController,
-                  label: 'Email',
-                  keyboardType: TextInputType.emailAddress,
-                  validator: controller.validateEmail,
-                ),
-                const SizedBox(height: 16),
-
-                // Password field
-                Obx(() => AuthTextField(
-                  controller: controller.passwordController,
-                  label: 'Password',
-                  obscureText: !controller.isPasswordVisible.value,
-                  validator: controller.validatePassword,
-                  suffixIcon: IconButton(
-                    onPressed: controller.togglePasswordVisibility,
-                    icon: Icon(
-                      controller.isPasswordVisible.value
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                  ),
-                )),
-                const SizedBox(height: 16),
-
-                // Remember me & Forgot password
-                Row(
+      backgroundColor: Colors.white,
+      body: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF3461FD).withOpacity(0.1),
+              Colors.white,
+              const Color(0xFF3461FD).withOpacity(0.05),
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 31),
+              child: Form(
+                key: controller.signInFormKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Obx(() => Checkbox(
-                      value: controller.rememberMe.value,
-                      onChanged: (_) => controller.toggleRememberMe(),
-                    )),
-                    const Text('Remember me'),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: controller.goToForgotPassword,
-                      child: const Text('Forgot Password?'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Sign in button
-                Obx(() => ElevatedButton(
-                  onPressed: controller.isLoading.value 
-                      ? null 
-                      : controller.signInWithEmailPassword,
-                  child: controller.isLoading.value
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Sign In'),
-                )),
-                const SizedBox(height: 16),
-
-                // Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'OR',
-                        style: Theme.of(context).textTheme.bodySmall,
+                    const SizedBox(height: 125),
+                    
+                    // Title and subtitle
+                    const Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primary600,
+                        height: 1.25,
                       ),
                     ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Google sign in button
-                Obx(() => GoogleSignInButton(
-                  onPressed: controller.isLoading.value 
-                      ? null 
-                      : controller.signInWithGoogle,
-                  isLoading: controller.isLoading.value,
-                )),
-                const SizedBox(height: 8),
-                
-                // Different Google account button
-                Obx(() => TextButton(
-                  onPressed: controller.isLoading.value 
-                      ? null 
-                      : controller.signInWithGoogleForceSelection,
-                  child: const Text('Use different Google account'),
-                )),
-                
-                const SizedBox(height: 40),
-
-                // Sign up link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account? "),
-                    TextButton(
-                      onPressed: controller.goToSignUp,
-                      child: const Text('Sign Up'),
+                    const SizedBox(height: 16),
+                    const SizedBox(
+                      width: 345,
+                      child: Text(
+                        'It was popularised in the 1960s with the release of Letraset sheetscontaining Lorem Ipsum.',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppTheme.gray700,
+                          height: 1.57,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
+                    const SizedBox(height: 47),
+
+                    // Email field
+                    SizedBox(
+                      width: 314,
+                      child: AuthTextField(
+                        controller: controller.emailController,
+                        label: 'Email/Phone Number',
+                        keyboardType: TextInputType.emailAddress,
+                        validator: controller.validateEmail,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Password field
+                    SizedBox(
+                      width: 314,
+                      child: Obx(() => AuthTextField(
+                        controller: controller.passwordController,
+                        label: 'Password',
+                        obscureText: !controller.isPasswordVisible.value,
+                        validator: controller.validatePassword,
+                        suffixIcon: IconButton(
+                          onPressed: controller.togglePasswordVisibility,
+                          icon: Icon(
+                            controller.isPasswordVisible.value
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppTheme.gray600,
+                            size: 24,
+                          ),
+                        ),
+                      )),
+                    ),
+                    const SizedBox(height: 13),
+
+                    // Or divider
+                    SizedBox(
+                      width: 345,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: Colors.grey.shade300,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 19.5),
+                            child: Text(
+                              'Or',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: AppTheme.gray900,
+                                height: 1.57,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: Colors.grey.shade300,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Google sign in button
+                    SizedBox(
+                      width: 329,
+                      child: Obx(() => GoogleSignInButton(
+                        onPressed: controller.isLoading.value 
+                            ? null 
+                            : controller.signInWithGoogle,
+                        isLoading: controller.isLoading.value,
+                      )),
+                    ),
+                    const SizedBox(height: 69),
+
+                    // Sign in button
+                    SizedBox(
+                      width: 304,
+                      child: Obx(() => Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primary500.withOpacity(0.3),
+                              blurRadius: 22,
+                              offset: const Offset(0, 38),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: controller.isLoading.value 
+                              ? null 
+                              : controller.signInWithEmailPassword,
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : const Text('Log In'),
+                        ),
+                      )),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Sign up link
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: AppTheme.gray800,
+                          height: 1.57,
+                        ),
+                        children: [
+                          const TextSpan(text: "Don't have account? "),
+                          WidgetSpan(
+                            child: GestureDetector(
+                              onTap: controller.goToSignUp,
+                              child: const Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppTheme.primary500,
+                                  height: 1.57,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: MediaQuery.of(context).padding.bottom + 40),
                   ],
                 ),
-                ],
               ),
             ),
           ),
