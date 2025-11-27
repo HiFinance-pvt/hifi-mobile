@@ -21,6 +21,39 @@ class SessionController extends GetxController {
     return await _sessionService.getSession(sessionId);
   }
 
+  Future<void> deleteSession(String sessionId) async {
+    try {
+      final success = await _sessionService.deleteSession(sessionId);
+      
+      if (success) {
+        sessions.removeWhere((s) => s['id'] == sessionId);
+        filteredSessions.removeWhere((s) => s['id'] == sessionId);
+        
+        // If deleted session was active
+        if (activeSessionId.value == sessionId) {
+          clearActiveSession();
+          
+          // If on chat page, navigate back to home
+          if (Get.currentRoute == '/chat' || Get.currentRoute == '/ChatView') {
+            Get.offNamed('/home');
+          }
+        }
+        
+        Get.snackbar(
+          'Success',
+          'Session deleted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to delete session',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
   Future<void> fetchSessions() async {
     try {
       isLoading.value = true;

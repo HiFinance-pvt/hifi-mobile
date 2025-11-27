@@ -76,6 +76,24 @@ class SessionService {
     }
   }
 
+  Future<bool> deleteSession(String sessionId) async {
+    try {
+      final token = await _getAuthToken();
+      if (token == null) throw 'Not authenticated';
+
+      final response = await _dio.delete(
+        '/delete-session',
+        queryParameters: {'session_id': sessionId},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      print('❌ [SessionService] Delete session error: ${e.message}');
+      throw _handleDioError(e);
+    }
+  }
+
   String _handleDioError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:

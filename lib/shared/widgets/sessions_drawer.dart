@@ -232,16 +232,25 @@ class SessionsDrawer extends GetView<SessionController> {
                                 color: Colors.white,
                               ),
                             ),
-                            trailing: timeLabel.isNotEmpty
-                                ? Text(
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (timeLabel.isNotEmpty)
+                                  Text(
                                     timeLabel,
                                     style: const TextStyle(
                                       fontFamily: 'Montserrat',
                                       fontSize: 11,
                                       color: Colors.white38,
                                     ),
-                                  )
-                                : null,
+                                  ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, size: 18, color: Colors.white54),
+                                  onPressed: () => controller.deleteSession(sessionId),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       });
