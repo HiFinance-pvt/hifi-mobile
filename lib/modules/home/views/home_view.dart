@@ -436,29 +436,36 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildServiceCard(String title, IconData icon) {
-    return Container(
-      width: 61,
-      height: 61,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        border: Border.all(color: Colors.white),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 20, color: const Color(0xFF404446)),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(
-              fontFamily: 'Montserrat',
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF404446),
+    return GestureDetector(
+      onTap: () {
+        if (title == 'Explore') {
+          Get.toNamed('/explore');
+        }
+      },
+      child: Container(
+        width: 61,
+        height: 61,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 20, color: const Color(0xFF404446)),
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'Montserrat',
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF404446),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
