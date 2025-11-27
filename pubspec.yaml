@@ -51,6 +51,7 @@ dependencies:
   
   # Storage
   shared_preferences: ^2.3.2
+  flutter_keyboard_visibility: ^6.0.0
 
 dev_dependencies:
   flutter_test:
