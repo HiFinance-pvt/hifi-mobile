@@ -440,6 +440,8 @@ class HomeView extends GetView<HomeController> {
       onTap: () {
         if (title == 'Explore') {
           Get.toNamed('/explore');
+        } else if (title == 'Integrations') {
+          Get.toNamed('/integrations');
         }
       },
       child: Container(

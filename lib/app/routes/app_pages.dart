@@ -9,6 +9,8 @@ import 'package:hifi/modules/chat/bindings/chat_binding.dart';
 import 'package:hifi/modules/chat/views/chat_view.dart';
 import 'package:hifi/modules/explore/bindings/explore_binding.dart';
 import 'package:hifi/modules/explore/views/explore_view.dart';
+import 'package:hifi/modules/integrations/bindings/integrations_binding.dart';
+import 'package:hifi/modules/integrations/views/integrations_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -44,6 +46,11 @@ class AppPages {
       name: Routes.explore,
       page: () => const ExploreView(),
       binding: ExploreBinding(),
+    ),
+    GetPage(
+      name: Routes.integrations,
+      page: () => const IntegrationsView(),
+      binding: IntegrationsBinding(),
     ),
   ];
 }
