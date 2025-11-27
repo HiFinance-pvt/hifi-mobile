@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hifi/modules/home/controllers/home_controller.dart';
 import 'package:hifi/shared/themes/app_theme.dart';
 import 'package:hifi/shared/widgets/sessions_drawer.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -11,7 +12,9 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
     
-    return Scaffold(
+    return KeyboardVisibilityBuilder(
+      builder: (context, isKeyboardVisible) {
+        return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.white,
       drawer: const SessionsDrawer(),
@@ -32,20 +35,33 @@ class HomeView extends GetView<HomeController> {
             stops: const [0.0, 0.5, 1.0],
           ),
         ),
-        child: SafeArea(
-          bottom: false,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Top Bar
-                Padding(
+        child: GestureDetector(
+          onTap: () {
+            print('🔍 HomeView: Screen tapped, unfocusing');
+            controller.messageFocusNode.unfocus();
+            FocusScope.of(context).unfocus();
+          },
+          child: SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Top Bar
+                  Padding(
                   padding: const EdgeInsets.fromLTRB(29, 13, 29, 0),
                   child: Row(
                     children: [
                       // Menu Icon
                       GestureDetector(
-                        onTap: () => scaffoldKey.currentState?.openDrawer(),
+                        onTap: () {
+                          print('🔍 HomeView: Menu tapped, unfocusing');
+                          controller.messageFocusNode.unfocus();
+                          FocusScope.of(context).unfocus();
+                          Future.delayed(const Duration(milliseconds: 50), () {
+                            scaffoldKey.currentState?.openDrawer();
+                          });
+                        },
                         child: Container(
                           width: 34,
                           height: 34,
@@ -203,49 +219,79 @@ class HomeView extends GetView<HomeController> {
                 ),
                 const SizedBox(height: 30),
 
-                // Search Bar
+                // Search Bar / Input Field
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 29),
                   child: Container(
-                    height: 50,
+                    constraints: const BoxConstraints(minHeight: 50, maxHeight: 150),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(color: const Color(0xFFC6C9CE)),
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         const SizedBox(width: 21),
-                        const Icon(Icons.add, size: 20, color: Colors.grey),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 15),
+                          child: Icon(Icons.add, size: 20, color: Colors.grey),
+                        ),
                         const SizedBox(width: 7),
-                        Container(
-                          width: 1,
-                          height: 20,
-                          color: const Color(0xFFE0E0E0),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Container(
+                            width: 1,
+                            height: 20,
+                            color: const Color(0xFFE0E0E0),
+                          ),
                         ),
                         const SizedBox(width: 10),
-                        const Expanded(
-                          child: Text(
-                            'Ask questions, or type \'@\' to call Agent.',
-                            style: TextStyle(
-                              fontFamily: 'Montserrat',
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFFC2C7D1),
+                        Expanded(
+                          child: IgnorePointer(
+                            ignoring: false,
+                            child: TextField(
+                              controller: controller.messageController,
+                              focusNode: controller.messageFocusNode,
+                              onSubmitted: (_) => controller.sendMessageFromDashboard(),
+                              maxLines: null,
+                              textInputAction: TextInputAction.newline,
+                              enableInteractiveSelection: true,
+                              decoration: const InputDecoration(
+                              hintText: "Ask your question...",
+                              hintStyle: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFC2C7D1),
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 12),
+                              ),
                             ),
                           ),
                         ),
-                        const Icon(Icons.mic, size: 18, color: Colors.grey),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 15),
+                          child: Icon(Icons.mic, size: 18, color: Colors.grey),
+                        ),
                         const SizedBox(width: 8),
-                        Container(
-                          width: 30,
-                          height: 30,
-                          margin: const EdgeInsets.only(right: 13),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primary500,
-                            shape: BoxShape.circle,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10, right: 13),
+                          child: GestureDetector(
+                            onTap: controller.sendMessageFromDashboard,
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: AppTheme.primary500,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.send, size: 14, color: Colors.white),
+                            ),
                           ),
-                          child: const Icon(Icons.send, size: 14, color: Colors.white),
                         ),
                       ],
                     ),
@@ -377,12 +423,15 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).padding.bottom + 40),
-              ],
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 40),
+                ],
+              ),
             ),
           ),
         ),
       ),
+        );
+      },
     );
   }
 

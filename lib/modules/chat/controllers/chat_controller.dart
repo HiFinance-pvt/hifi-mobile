@@ -5,7 +5,7 @@ import 'package:hifi/services/session_service.dart';
 class ChatController extends GetxController {
   final SessionService _sessionService = SessionService();
   final messageController = TextEditingController();
-  final messageFocusNode = FocusNode();
+  late final FocusNode messageFocusNode;
   final scrollController = ScrollController();
   
   final messages = <Map<String, dynamic>>[].obs;
@@ -15,7 +15,38 @@ class ChatController extends GetxController {
   final sessionName = 'Chat Session'.obs;
 
   @override
+  void onInit() {
+    super.onInit();
+    messageFocusNode = FocusNode();
+    messageFocusNode.addListener(() {
+      print('🔍 ChatController: Focus changed - hasFocus: ${messageFocusNode.hasFocus}');
+    });
+    
+    final args = Get.arguments;
+    
+    if (args is Map<String, dynamic>) {
+      sessionId.value = args['sessionId'] ?? '';
+      final initialMessage = args['initialMessage'] as String?;
+      
+      if (sessionId.value.isNotEmpty) {
+        loadSession().then((_) {
+          if (initialMessage != null && initialMessage.isNotEmpty) {
+            messageController.text = initialMessage;
+            sendMessage();
+          }
+        });
+      }
+    } else if (args is String) {
+      sessionId.value = args;
+      if (sessionId.value.isNotEmpty) {
+        loadSession();
+      }
+    }
+  }
+
+  @override
   void onClose() {
+    print('🔍 ChatController: onClose called');
     messageController.dispose();
     messageFocusNode.dispose();
     scrollController.dispose();
@@ -29,15 +60,6 @@ class ChatController extends GetxController {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
-    }
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    sessionId.value = Get.arguments as String? ?? '';
-    if (sessionId.value.isNotEmpty) {
-      loadSession();
     }
   }
 

@@ -1,14 +1,36 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/services/auth_service.dart';
+import 'package:hifi/controllers/session_controller.dart';
 import 'package:hifi/app/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
+  final SessionController _sessionController = Get.find<SessionController>();
+  late final FocusNode messageFocusNode;
+  final messageController = TextEditingController();
 
   final userEmail = ''.obs;
   final signInMethod = ''.obs;
   final authToken = ''.obs;
   final userName = 'John'.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    messageFocusNode = FocusNode();
+    messageFocusNode.addListener(() {
+      print('🔍 HomeController: Focus changed - hasFocus: ${messageFocusNode.hasFocus}');
+    });
+    _loadUserInfo();
+  }
+
+  @override
+  void onClose() {
+    messageController.dispose();
+    messageFocusNode.dispose();
+    super.onClose();
+  }
   
   // Mock data
   final usagePercentage = 68.0;
@@ -63,11 +85,7 @@ class HomeController extends GetxController {
     },
   ];
 
-  @override
-  void onInit() {
-    super.onInit();
-    _loadUserInfo();
-  }
+
 
   void _loadUserInfo() async {
     final user = _authService.currentUser;
@@ -103,6 +121,18 @@ class HomeController extends GetxController {
       Get.offAllNamed(Routes.signin);
     } catch (e) {
       Get.snackbar('Error', 'Failed to sign out: ${e.toString()}', snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
+  Future<void> sendMessageFromDashboard() async {
+    final text = messageController.text.trim();
+    if (text.isEmpty) return;
+
+    // Create new session and navigate to chat with initial message
+    final sessionId = await _sessionController.createNewSession();
+    if (sessionId != null) {
+      messageController.clear();
+      Get.toNamed('/chat', arguments: {'sessionId': sessionId, 'initialMessage': text});
     }
   }
 }

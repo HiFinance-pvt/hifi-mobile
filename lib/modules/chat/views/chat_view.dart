@@ -59,16 +59,29 @@ class ChatView extends GetView<ChatController> {
                 stops: const [0.0, 0.5, 1.0],
               ),
             ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  // Top Bar
-                  Padding(
+            child: GestureDetector(
+              onTap: () {
+                print('🔍 ChatView: Screen tapped, unfocusing');
+                controller.messageFocusNode.unfocus();
+                FocusScope.of(context).unfocus();
+              },
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    // Top Bar
+                    Padding(
                     padding: const EdgeInsets.fromLTRB(16, 13, 16, 0),
                     child: Row(
                       children: [
                         GestureDetector(
-                          onTap: () => scaffoldKey.currentState?.openDrawer(),
+                          onTap: () {
+                            print('🔍 ChatView: Menu tapped, unfocusing');
+                            controller.messageFocusNode.unfocus();
+                            FocusScope.of(context).unfocus();
+                            Future.delayed(const Duration(milliseconds: 50), () {
+                              scaffoldKey.currentState?.openDrawer();
+                            });
+                          },
                           child: Container(
                             width: 34,
                             height: 34,
@@ -341,13 +354,16 @@ class ChatView extends GetView<ChatController> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: TextField(
-                              controller: controller.messageController,
-                              focusNode: controller.messageFocusNode,
-                              onSubmitted: (_) => controller.sendMessage(),
-                              maxLines: null,
-                              textInputAction: TextInputAction.newline,
-                              decoration: const InputDecoration(
+                            child: IgnorePointer(
+                              ignoring: false,
+                              child: TextField(
+                                controller: controller.messageController,
+                                focusNode: controller.messageFocusNode,
+                                onSubmitted: (_) => controller.sendMessage(),
+                                maxLines: null,
+                                textInputAction: TextInputAction.newline,
+                                enableInteractiveSelection: true,
+                                decoration: const InputDecoration(
                                 hintText: "Ask your question...",
                                 hintStyle: TextStyle(
                                   fontFamily: 'Montserrat',
@@ -358,7 +374,8 @@ class ChatView extends GetView<ChatController> {
                                 border: InputBorder.none,
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical: 15),
+                                contentPadding: EdgeInsets.symmetric(vertical: 12),
+                                ),
                               ),
                             ),
                           ),
@@ -386,7 +403,8 @@ class ChatView extends GetView<ChatController> {
                       ),
                     ),
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
