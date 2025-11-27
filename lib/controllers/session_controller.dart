@@ -9,11 +9,16 @@ class SessionController extends GetxController {
   final activeSessionId = Rxn<String>();
   final isLoading = false.obs;
   final searchQuery = ''.obs;
+  final needsRefresh = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchSessions();
+  }
+
+  Future<Map<String, dynamic>> getSessionDetails(String sessionId) async {
+    return await _sessionService.getSession(sessionId);
   }
 
   Future<void> fetchSessions() async {
@@ -56,6 +61,27 @@ class SessionController extends GetxController {
 
   void clearActiveSession() {
     activeSessionId.value = null;
+  }
+
+  Future<String?> createNewSession() async {
+    try {
+      final data = await _sessionService.createSession();
+      final sessionId = data['sessionId']?.toString();
+      
+      if (sessionId != null) {
+        // Set as active session
+        setActiveSession(sessionId);
+        
+        // Mark that refresh is needed when drawer opens next time
+        needsRefresh.value = true;
+        
+        return sessionId;
+      }
+      return null;
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to create session', snackPosition: SnackPosition.BOTTOM);
+      return null;
+    }
   }
 
   String getTimeLabel(String? lastUpdateTime) {

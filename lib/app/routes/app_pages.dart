@@ -5,6 +5,8 @@ import 'package:hifi/modules/auth/views/signup_view.dart';
 import 'package:hifi/modules/auth/views/forgot_password_view.dart';
 import 'package:hifi/modules/home/bindings/home_binding.dart';
 import 'package:hifi/modules/home/views/home_view.dart';
+import 'package:hifi/modules/chat/bindings/chat_binding.dart';
+import 'package:hifi/modules/chat/views/chat_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -30,6 +32,11 @@ class AppPages {
       name: Routes.home,
       page: () => const HomeView(),
       binding: HomeBinding(),
+    ),
+    GetPage(
+      name: Routes.chat,
+      page: () => const ChatView(),
+      binding: ChatBinding(),
     ),
   ];
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/controllers/session_controller.dart';
+import 'package:hifi/modules/chat/controllers/chat_controller.dart';
+import 'package:hifi/modules/chat/views/chat_view.dart';
+import 'package:hifi/modules/chat/bindings/chat_binding.dart';
 import 'package:hifi/shared/themes/app_theme.dart';
 
 class SessionsDrawer extends GetView<SessionController> {
@@ -8,7 +11,16 @@ class SessionsDrawer extends GetView<SessionController> {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
+    return Obx(() {
+      // Check if refresh is needed when drawer opens
+      if (controller.needsRefresh.value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.needsRefresh.value = false;
+          controller.fetchSessions();
+        });
+      }
+
+      return Drawer(
       backgroundColor: AppTheme.gray900,
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -69,9 +81,26 @@ class SessionsDrawer extends GetView<SessionController> {
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: Create new chat API
-                    Get.back();
+                  onPressed: () async {
+                    final sessionId = await controller.createNewSession();
+                    
+                    if (sessionId != null) {
+                      Get.back();
+                      
+                      // Check if already on chat page
+                      if (Get.currentRoute == '/chat') {
+                        Get.delete<ChatController>();
+                        Get.off(
+                          () => const ChatView(),
+                          binding: ChatBinding(),
+                          arguments: sessionId,
+                        );
+                      } else {
+                        Get.toNamed('/chat', arguments: sessionId);
+                      }
+                    } else {
+                      Get.back();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primary500,
@@ -179,7 +208,19 @@ class SessionsDrawer extends GetView<SessionController> {
                             onTap: () {
                               controller.setActiveSession(sessionId);
                               Get.back();
-                              // TODO: Navigate to chat page with sessionId
+                              
+                              // Check if already on chat page
+                              if (Get.currentRoute == '/chat') {
+                                // Delete and recreate controller
+                                Get.delete<ChatController>();
+                                Get.off(
+                                  () => const ChatView(),
+                                  binding: ChatBinding(),
+                                  arguments: sessionId,
+                                );
+                              } else {
+                                Get.toNamed('/chat', arguments: sessionId);
+                              }
                             },
                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
                             title: Text(
@@ -213,6 +254,7 @@ class SessionsDrawer extends GetView<SessionController> {
           ),
         ),
       ),
-    );
+      );
+    });
   }
 }
