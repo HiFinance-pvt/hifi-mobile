@@ -102,7 +102,7 @@ class HomeController extends GetxController {
       await _authService.signOut();
       Get.offAllNamed(Routes.signin);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to sign out: ${e.toString()}');
+      Get.snackbar('Error', 'Failed to sign out: ${e.toString()}', snackPosition: SnackPosition.BOTTOM);
     }
   }
 }
