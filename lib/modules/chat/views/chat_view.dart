@@ -278,38 +278,30 @@ class ChatView extends GetView<ChatController> {
                                           ),
                                           borderRadius: BorderRadius.circular(10),
                                         ),
-                                        child: isUser
-                                            ? Text(
-                                                text,
-                                                style: const TextStyle(
-                                                  fontFamily: 'Montserrat',
-                                                  fontSize: 12,
-                                                  color: Color(0xFF1b1a1d),
-                                                  height: 1.67,
-                                                ),
-                                              )
-                                            : MarkdownBody(
-                                                data: text,
-                                                styleSheet: MarkdownStyleSheet(
-                                                  p: const TextStyle(
-                                                    fontFamily: 'Montserrat',
-                                                    fontSize: 12,
-                                                    color: Color(0xFF1b1a1d),
-                                                    height: 1.67,
-                                                  ),
-                                                  strong: const TextStyle(
-                                                    fontFamily: 'Montserrat',
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xFF1b1a1d),
-                                                  ),
-                                                  listBullet: const TextStyle(
-                                                    fontFamily: 'Montserrat',
-                                                    fontSize: 12,
-                                                    color: Color(0xFF1b1a1d),
-                                                  ),
-                                                ),
-                                              ),
+                                        child: MarkdownBody(
+                                          data: text,
+                                          styleSheet: MarkdownStyleSheet(
+                                            p: const TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 12,
+                                              color: Color(0xFF1b1a1d),
+                                              height: 1.67,
+                                            ),
+                                            strong: const TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: Color(0xFF1b1a1d),
+                                            ),
+                                            listBullet: const TextStyle(
+                                              fontFamily: 'Montserrat',
+                                              fontSize: 12,
+                                              color: Color(0xFF1b1a1d),
+                                            ),
+                                            listIndent: 24,
+                                            blockSpacing: 8,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),

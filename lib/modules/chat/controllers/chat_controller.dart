@@ -13,6 +13,8 @@ class ChatController extends GetxController {
   final isSending = false.obs;
   final sessionId = ''.obs;
   final sessionName = 'Chat Session'.obs;
+  final agentPrependText = ''.obs;
+  final isFirstMessage = true.obs;
 
   @override
   void onInit() {
@@ -27,6 +29,7 @@ class ChatController extends GetxController {
     if (args is Map<String, dynamic>) {
       sessionId.value = args['sessionId'] ?? '';
       final initialMessage = args['initialMessage'] as String?;
+      agentPrependText.value = args['agentPrependText'] ?? '';
       
       if (sessionId.value.isNotEmpty) {
         loadSession().then((_) {
@@ -38,6 +41,7 @@ class ChatController extends GetxController {
       }
     } else if (args is String) {
       sessionId.value = args;
+      agentPrependText.value = '';
       if (sessionId.value.isNotEmpty) {
         loadSession();
       }
@@ -106,11 +110,18 @@ class ChatController extends GetxController {
     try {
       isSending.value = true;
       
+      // Prepare message text with prepend if first message
+      String messageToSend = text;
+      if (isFirstMessage.value && agentPrependText.value.isNotEmpty) {
+        messageToSend = '${agentPrependText.value}\n\n$text';
+        isFirstMessage.value = false;
+      }
+      
       // Add user message immediately (optimistic UI)
       final userMessage = {
         'author': 'user',
         'content': {
-          'parts': [{'text': text}]
+          'parts': [{'text': messageToSend}]
         },
         'timestamp': DateTime.now().millisecondsSinceEpoch / 1000,
       };
@@ -121,7 +132,7 @@ class ChatController extends GetxController {
       Future.delayed(const Duration(milliseconds: 100), scrollToBottom);
 
       // Call API
-      final response = await _sessionService.sendMessage(sessionId.value, text);
+      final response = await _sessionService.sendMessage(sessionId.value, messageToSend);
       
       // Parse bot response and add to messages
       final botText = response['response']?['text']?.toString() ?? '';
