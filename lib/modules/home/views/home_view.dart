@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/modules/home/controllers/home_controller.dart';
 import 'package:hifi/shared/themes/app_theme.dart';
+import 'package:hifi/shared/widgets/sessions_drawer.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldKey = GlobalKey<ScaffoldState>();
+    
     return Scaffold(
+      key: scaffoldKey,
       backgroundColor: Colors.white,
+      drawer: const SessionsDrawer(),
+      drawerEnableOpenDragGesture: false,
+      resizeToAvoidBottomInset: false,
       body: Container(
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
@@ -37,15 +44,18 @@ class HomeView extends GetView<HomeController> {
                   child: Row(
                     children: [
                       // Menu Icon
-                      Container(
-                        width: 34,
-                        height: 34,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white.withOpacity(0.3)),
+                      GestureDetector(
+                        onTap: () => scaffoldKey.currentState?.openDrawer(),
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white.withOpacity(0.3)),
+                          ),
+                          child: const Icon(Icons.menu, size: 20),
                         ),
-                        child: const Icon(Icons.menu, size: 20),
                       ),
                       const Spacer(),
                       // Notification Bell
