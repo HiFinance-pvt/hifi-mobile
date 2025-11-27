@@ -30,17 +30,36 @@ class AuthService {
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      print('🔵 [AuthService] Starting Google Sign In...');
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+      print('🔵 [AuthService] Google user: ${googleUser?.email}');
+      
+      if (googleUser == null) {
+        print('⚠️ [AuthService] User cancelled Google Sign In');
+        return null;
+      }
 
+      print('🔵 [AuthService] Getting authentication...');
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      print('🔵 [AuthService] Access token: ${googleAuth.accessToken != null}');
+      print('🔵 [AuthService] ID token: ${googleAuth.idToken != null}');
+      
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      return await _auth.signInWithCredential(credential);
-    } catch (e) {
+      print('🔵 [AuthService] Signing in with credential...');
+      final result = await _auth.signInWithCredential(credential);
+      print('✅ [AuthService] Sign in successful: ${result.user?.email}');
+      return result;
+    } catch (e, stackTrace) {
+      print('❌ [AuthService] Google sign-in error: $e');
+      print('❌ [AuthService] Stack trace: $stackTrace');
+      
+      if (e.toString().contains('ApiException: 7')) {
+        throw 'Network error. Please check:\n1. Internet connection\n2. SHA-1 fingerprint in Firebase Console';
+      }
       throw 'Google sign-in failed: ${e.toString()}';
     }
   }
@@ -48,20 +67,33 @@ class AuthService {
   // Force Google account selection
   Future<UserCredential?> signInWithGoogleForceSelection() async {
     try {
+      print('🔵 [AuthService] Force selection - signing out first...');
       // Sign out from Google first to force account selection
       await _googleSignIn.signOut();
       
+      print('🔵 [AuthService] Starting Google Sign In (Force)...');
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
+      print('🔵 [AuthService] Google user (Force): ${googleUser?.email}');
+      
+      if (googleUser == null) {
+        print('⚠️ [AuthService] User cancelled Google Sign In (Force)');
+        return null;
+      }
 
+      print('🔵 [AuthService] Getting authentication (Force)...');
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      return await _auth.signInWithCredential(credential);
-    } catch (e) {
+      print('🔵 [AuthService] Signing in with credential (Force)...');
+      final result = await _auth.signInWithCredential(credential);
+      print('✅ [AuthService] Sign in successful (Force): ${result.user?.email}');
+      return result;
+    } catch (e, stackTrace) {
+      print('❌ [AuthService] Google sign-in (Force) error: $e');
+      print('❌ [AuthService] Stack trace: $stackTrace');
       throw 'Google sign-in failed: ${e.toString()}';
     }
   }
