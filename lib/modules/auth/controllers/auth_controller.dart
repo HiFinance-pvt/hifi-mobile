@@ -7,6 +7,7 @@ class AuthController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
 
   // Form controllers
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -18,18 +19,22 @@ class AuthController extends GetxController {
   final rememberMe = false.obs;
 
   // Form keys
-  final signInFormKey = GlobalKey<FormState>();
-  final signUpFormKey = GlobalKey<FormState>();
-  final forgotPasswordFormKey = GlobalKey<FormState>();
+  late GlobalKey<FormState> signInFormKey;
+  late GlobalKey<FormState> signUpFormKey;
+  late GlobalKey<FormState> forgotPasswordFormKey;
 
   @override
   void onInit() {
     super.onInit();
+    signInFormKey = GlobalKey<FormState>();
+    signUpFormKey = GlobalKey<FormState>();
+    forgotPasswordFormKey = GlobalKey<FormState>();
     _loadRememberedEmail();
   }
 
   @override
   void onClose() {
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
@@ -111,14 +116,22 @@ class AuthController extends GetxController {
   Future<void> signInWithGoogle() async {
     try {
       isLoading.value = true;
+      print('🔵 Starting Google Sign In...');
       
       final result = await _authService.signInWithGoogle();
+      print('🔵 Google Sign In result: $result');
+      
       if (result != null) {
+        print('✅ Google Sign In successful');
         Get.snackbar('Success', 'Signed in with Google successfully');
         Get.offAllNamed(Routes.home);
+      } else {
+        print('⚠️ Google Sign In returned null');
       }
       
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ Google Sign In Error: $e');
+      print('❌ Stack trace: $stackTrace');
       Get.snackbar('Error', e.toString(), backgroundColor: Colors.red.shade100);
     } finally {
       isLoading.value = false;
@@ -129,14 +142,22 @@ class AuthController extends GetxController {
   Future<void> signInWithGoogleForceSelection() async {
     try {
       isLoading.value = true;
+      print('🔵 Starting Google Sign In (Force Selection)...');
       
       final result = await _authService.signInWithGoogleForceSelection();
+      print('🔵 Google Sign In (Force) result: $result');
+      
       if (result != null) {
+        print('✅ Google Sign In (Force) successful');
         Get.snackbar('Success', 'Signed in with Google successfully');
         Get.offAllNamed(Routes.home);
+      } else {
+        print('⚠️ Google Sign In (Force) returned null');
       }
       
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ Google Sign In (Force) Error: $e');
+      print('❌ Stack trace: $stackTrace');
       Get.snackbar('Error', e.toString(), backgroundColor: Colors.red.shade100);
     } finally {
       isLoading.value = false;
@@ -165,11 +186,15 @@ class AuthController extends GetxController {
   // Navigation methods
   void goToSignUp() {
     _clearForm();
+    signInFormKey = GlobalKey<FormState>();
+    signUpFormKey = GlobalKey<FormState>();
     Get.toNamed(Routes.signup);
   }
 
   void goToSignIn() {
     _clearForm();
+    signInFormKey = GlobalKey<FormState>();
+    signUpFormKey = GlobalKey<FormState>();
     Get.offNamed(Routes.signin);
   }
 
@@ -179,6 +204,7 @@ class AuthController extends GetxController {
 
   // Clear form
   void _clearForm() {
+    nameController.clear();
     emailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
@@ -187,6 +213,13 @@ class AuthController extends GetxController {
   }
 
   // Validators
+  String? validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Name is required';
+    }
+    return null;
+  }
+
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email is required';
