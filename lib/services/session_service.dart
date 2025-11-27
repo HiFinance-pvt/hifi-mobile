@@ -94,6 +94,28 @@ class SessionService {
     }
   }
 
+  Future<Map<String, dynamic>> sendMessage(String sessionId, String message) async {
+    try {
+      final token = await _getAuthToken();
+      if (token == null) throw 'Not authenticated';
+
+      final response = await _dio.post(
+        '/send-message',
+        queryParameters: {'session_id': sessionId},
+        data: {'message': message},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      throw 'Failed to send message';
+    } on DioException catch (e) {
+      print('❌ [SessionService] Send message error: ${e.message}');
+      throw _handleDioError(e);
+    }
+  }
+
   String _handleDioError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:

@@ -80,7 +80,7 @@ class AuthController extends GetxController {
         await _authService.saveRememberMe(emailController.text.trim());
       }
 
-      Get.snackbar('Success', 'Signed in successfully');
+      Get.snackbar('Success', 'Signed in successfully', snackPosition: SnackPosition.BOTTOM);
       Get.offAllNamed(Routes.home);
       
     } catch (e) {
@@ -102,7 +102,7 @@ class AuthController extends GetxController {
         passwordController.text,
       );
 
-      Get.snackbar('Success', 'Account created successfully');
+      Get.snackbar('Success', 'Account created successfully', snackPosition: SnackPosition.BOTTOM);
       Get.offNamed(Routes.signin);
       
     } catch (e) {
@@ -123,7 +123,7 @@ class AuthController extends GetxController {
       
       if (result != null) {
         print('✅ Google Sign In successful');
-        Get.snackbar('Success', 'Signed in with Google successfully');
+        Get.snackbar('Success', 'Signed in with Google successfully', snackPosition: SnackPosition.BOTTOM);
         Get.offAllNamed(Routes.home);
       } else {
         print('⚠️ Google Sign In returned null');
@@ -149,7 +149,7 @@ class AuthController extends GetxController {
       
       if (result != null) {
         print('✅ Google Sign In (Force) successful');
-        Get.snackbar('Success', 'Signed in with Google successfully');
+        Get.snackbar('Success', 'Signed in with Google successfully', snackPosition: SnackPosition.BOTTOM);
         Get.offAllNamed(Routes.home);
       } else {
         print('⚠️ Google Sign In (Force) returned null');
@@ -173,7 +173,7 @@ class AuthController extends GetxController {
       
       await _authService.sendPasswordResetEmail(emailController.text.trim());
       
-      Get.snackbar('Success', 'Password reset email sent');
+      Get.snackbar('Success', 'Password reset email sent', snackPosition: SnackPosition.BOTTOM);
       Get.back();
       
     } catch (e) {

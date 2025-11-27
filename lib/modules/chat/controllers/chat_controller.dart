@@ -1,20 +1,65 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/services/session_service.dart';
 
 class ChatController extends GetxController {
   final SessionService _sessionService = SessionService();
+  final messageController = TextEditingController();
+  late final FocusNode messageFocusNode;
+  final scrollController = ScrollController();
   
   final messages = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
+  final isSending = false.obs;
   final sessionId = ''.obs;
   final sessionName = 'Chat Session'.obs;
 
   @override
   void onInit() {
     super.onInit();
-    sessionId.value = Get.arguments as String? ?? '';
-    if (sessionId.value.isNotEmpty) {
-      loadSession();
+    messageFocusNode = FocusNode();
+    messageFocusNode.addListener(() {
+      print('🔍 ChatController: Focus changed - hasFocus: ${messageFocusNode.hasFocus}');
+    });
+    
+    final args = Get.arguments;
+    
+    if (args is Map<String, dynamic>) {
+      sessionId.value = args['sessionId'] ?? '';
+      final initialMessage = args['initialMessage'] as String?;
+      
+      if (sessionId.value.isNotEmpty) {
+        loadSession().then((_) {
+          if (initialMessage != null && initialMessage.isNotEmpty) {
+            messageController.text = initialMessage;
+            sendMessage();
+          }
+        });
+      }
+    } else if (args is String) {
+      sessionId.value = args;
+      if (sessionId.value.isNotEmpty) {
+        loadSession();
+      }
+    }
+  }
+
+  @override
+  void onClose() {
+    print('🔍 ChatController: onClose called');
+    messageController.dispose();
+    messageFocusNode.dispose();
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void scrollToBottom() {
+    if (scrollController.hasClients) {
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -27,6 +72,9 @@ class ChatController extends GetxController {
       final events = data['events'] as List? ?? [];
       
       messages.value = events.map((e) => e as Map<String, dynamic>).toList();
+      
+      // Scroll to bottom after loading messages
+      Future.delayed(const Duration(milliseconds: 300), scrollToBottom);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load chat', snackPosition: SnackPosition.BOTTOM);
     } finally {
@@ -49,5 +97,55 @@ class ChatController extends GetxController {
 
   bool isUserMessage(Map<String, dynamic> event) {
     return event['author'] == 'user';
+  }
+
+  Future<void> sendMessage() async {
+    final text = messageController.text.trim();
+    if (text.isEmpty || isSending.value) return;
+
+    try {
+      isSending.value = true;
+      
+      // Add user message immediately (optimistic UI)
+      final userMessage = {
+        'author': 'user',
+        'content': {
+          'parts': [{'text': text}]
+        },
+        'timestamp': DateTime.now().millisecondsSinceEpoch / 1000,
+      };
+      messages.add(userMessage);
+      messageController.clear();
+      
+      // Scroll to bottom after adding message
+      Future.delayed(const Duration(milliseconds: 100), scrollToBottom);
+
+      // Call API
+      final response = await _sessionService.sendMessage(sessionId.value, text);
+      
+      // Parse bot response and add to messages
+      final botText = response['response']?['text']?.toString() ?? '';
+      if (botText.isNotEmpty) {
+        final botMessage = {
+          'author': 'hifi_agent',
+          'content': {
+            'parts': [{'text': botText}]
+          },
+          'timestamp': DateTime.now().millisecondsSinceEpoch / 1000,
+        };
+        messages.add(botMessage);
+        
+        // Scroll to bottom after bot reply
+        Future.delayed(const Duration(milliseconds: 100), scrollToBottom);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to send message',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isSending.value = false;
+    }
   }
 }
