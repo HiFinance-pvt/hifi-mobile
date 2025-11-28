@@ -87,39 +87,42 @@ class HomeView extends GetView<HomeController> {
                       ),
                       const SizedBox(width: 12),
                       // Profile with PRO badge
-                      Stack(
-                        children: [
-                          Container(
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.person, size: 16),
-                          ),
-                          Positioned(
-                            right: -2,
-                            top: -2,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                      GestureDetector(
+                        onTap: () => controller.showLogoutDialog(),
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 25,
+                              height: 25,
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
+                                color: Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Text(
-                                'PRO',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 6,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  letterSpacing: 0.48,
+                              child: const Icon(Icons.person, size: 16),
+                            ),
+                            Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text(
+                                  'PRO',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 6,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    letterSpacing: 0.48,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
