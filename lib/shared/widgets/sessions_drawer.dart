@@ -32,6 +32,12 @@ class SessionsDrawer extends GetView<SessionController> {
               padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
               child: Row(
                 children: [
+                  Image.asset(
+                    'assets/images/hifi_logo.png',
+                    width: 40,
+                    height: 40,
+                  ),
+                  const SizedBox(width: 12),
                   const Text(
                     'Hi-Fi',
                     style: TextStyle(
