@@ -83,7 +83,7 @@ class ForgotPasswordView extends GetView<AuthController> {
 
                 // Back to sign in
                 TextButton(
-                  onPressed: () => Get.back(),
+                  onPressed: () => Navigator.of(context).pop(),
                   child: const Text('Back to Sign In'),
                 ),
                 ],

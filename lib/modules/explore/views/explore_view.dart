@@ -35,7 +35,7 @@ class ExploreView extends GetView<ExploreController> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Get.back(),
+                      onTap: () => Navigator.of(context).pop(),
                       child: const Icon(Icons.arrow_back, size: 24),
                     ),
                     const SizedBox(width: 28),
