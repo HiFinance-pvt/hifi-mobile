@@ -30,7 +30,7 @@ class IntegrationsView extends GetView<IntegrationsController> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Get.back(),
+                      onTap: () => Navigator.of(context).pop(),
                       child: const Icon(Icons.arrow_back, size: 26, color: Color(0xFF161313)),
                     ),
                     const SizedBox(width: 27),

@@ -205,7 +205,7 @@ class _TaxPreferenceDialogState extends State<TaxPreferenceDialog> {
                           'taxRegime': taxRegime,
                           'tan': tanController.text,
                         });
-                        Get.back();
+                        Navigator.of(context).pop();
                       }
                     },
                     style: ElevatedButton.styleFrom(
