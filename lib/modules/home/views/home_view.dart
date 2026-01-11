@@ -603,11 +603,15 @@ class HomeView extends GetView<HomeController> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: controller.trendingStocks.length,
-              itemBuilder: (context, index) {
-                final stock = controller.trendingStocks[index];
+            child: Obx(() => controller.trendingStocks.isEmpty
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFF3461FD)),
+                  )
+                : ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: controller.trendingStocks.length,
+                    itemBuilder: (context, index) {
+                      final stock = controller.trendingStocks[index];
                 return Padding(
                   padding: EdgeInsets.only(bottom: index < 2 ? 8 : 0),
                   child: Row(
@@ -674,7 +678,7 @@ class HomeView extends GetView<HomeController> {
                   ),
                 );
               },
-            ),
+            )),
           ),
         ],
       ),

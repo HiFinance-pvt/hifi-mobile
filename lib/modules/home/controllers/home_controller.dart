@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/services/auth_service.dart';
 import 'package:hifi/services/news_service.dart';
+import 'package:hifi/services/stocks_service.dart';
 import 'package:hifi/controllers/session_controller.dart';
 import 'package:hifi/app/routes/app_routes.dart';
 
@@ -9,6 +10,7 @@ class HomeController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
   final SessionController _sessionController = Get.find<SessionController>();
   final NewsService _newsService = NewsService();
+  final StocksService _stocksService = StocksService();
   late final FocusNode messageFocusNode;
   final messageController = TextEditingController();
 
@@ -18,6 +20,8 @@ class HomeController extends GetxController {
   final userName = 'John'.obs;
   final newsItems = <Map<String, dynamic>>[].obs;
   final isLoadingNews = false.obs;
+  final trendingStocks = <Map<String, dynamic>>[].obs;
+  final isLoadingStocks = false.obs;
 
   @override
   void onInit() {
@@ -28,6 +32,7 @@ class HomeController extends GetxController {
     });
     _loadUserInfo();
     _loadNews();
+    _loadStocks();
   }
 
   @override
@@ -48,30 +53,6 @@ class HomeController extends GetxController {
     'Show me my spending trends',
   ];
   
-  final trendingStocks = [
-    {
-      'name': 'Bitcoin',
-      'symbol': 'BTC',
-      'price': '₹2,509.75',
-      'change': '+9.77%',
-      'isPositive': true,
-    },
-    {
-      'name': 'Cardano',
-      'symbol': 'ADA',
-      'price': '₹1,234.50',
-      'change': '+5.23%',
-      'isPositive': true,
-    },
-    {
-      'name': 'Bitcoin',
-      'symbol': 'BTC',
-      'price': '₹2,509.75',
-      'change': '+9.77%',
-      'isPositive': true,
-    },
-  ];
-
   void _loadUserInfo() async {
     final user = _authService.currentUser;
     if (user != null) {
@@ -133,6 +114,18 @@ class HomeController extends GetxController {
       ];
     } finally {
       isLoadingNews.value = false;
+    }
+  }
+
+  Future<void> _loadStocks() async {
+    try {
+      isLoadingStocks.value = true;
+      final stocks = await _stocksService.getIndianStocks();
+      trendingStocks.value = stocks;
+    } catch (e) {
+      print('❌ [HomeController] Failed to load stocks: $e');
+    } finally {
+      isLoadingStocks.value = false;
     }
   }
 
