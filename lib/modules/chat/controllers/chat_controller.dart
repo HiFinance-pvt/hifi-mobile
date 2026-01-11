@@ -32,12 +32,14 @@ class ChatController extends GetxController {
       agentPrependText.value = args['agentPrependText'] ?? '';
       
       if (sessionId.value.isNotEmpty) {
-        loadSession().then((_) {
-          if (initialMessage != null && initialMessage.isNotEmpty) {
-            messageController.text = initialMessage;
-            sendMessage();
-          }
-        });
+        // Skip loading for new sessions, just send the initial message
+        if (initialMessage != null && initialMessage.isNotEmpty) {
+          messageController.text = initialMessage;
+          sendMessage();
+        } else {
+          // Only load if no initial message (existing session)
+          loadSession();
+        }
       }
     } else if (args is String) {
       sessionId.value = args;
@@ -80,7 +82,10 @@ class ChatController extends GetxController {
       // Scroll to bottom after loading messages
       Future.delayed(const Duration(milliseconds: 300), scrollToBottom);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load chat', snackPosition: SnackPosition.BOTTOM);
+      print('⚠️ [ChatController] Could not load session, starting fresh: $e');
+      // Don't show error, just start with empty messages
+      messages.value = [];
+      sessionName.value = 'Chat Session';
     } finally {
       isLoading.value = false;
     }

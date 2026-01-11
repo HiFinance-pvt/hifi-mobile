@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/modules/auth/bindings/auth_binding.dart';
 import 'package:hifi/modules/auth/views/signin_view.dart';
@@ -41,6 +42,7 @@ class AppPages {
       name: Routes.chat,
       page: () => const ChatView(),
       binding: ChatBinding(),
+      preventDuplicates: false,
     ),
     GetPage(
       name: Routes.explore,

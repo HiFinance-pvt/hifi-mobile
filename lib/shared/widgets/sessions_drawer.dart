@@ -49,7 +49,7 @@ class SessionsDrawer extends GetView<SessionController> {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () => Get.back(),
+                    onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close, color: Colors.white70, size: 24),
                   ),
                 ],
@@ -91,21 +91,19 @@ class SessionsDrawer extends GetView<SessionController> {
                     final sessionId = await controller.createNewSession();
                     
                     if (sessionId != null) {
-                      Get.back();
+                      Navigator.of(context).pop();
                       
-                      // Check if already on chat page
                       if (Get.currentRoute == '/chat') {
-                        Get.delete<ChatController>();
-                        Get.off(
-                          () => const ChatView(),
-                          binding: ChatBinding(),
-                          arguments: sessionId,
-                        );
+                        // Already on chat, just reload with new session
+                        final chatController = Get.find<ChatController>();
+                        chatController.sessionId.value = sessionId;
+                        chatController.messages.clear();
+                        chatController.isFirstMessage.value = true;
                       } else {
                         Get.toNamed('/chat', arguments: sessionId);
                       }
                     } else {
-                      Get.back();
+                      Navigator.of(context).pop();
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -211,19 +209,15 @@ class SessionsDrawer extends GetView<SessionController> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: ListTile(
-                            onTap: () {
+                            onTap: () async {
                               controller.setActiveSession(sessionId);
-                              Get.back();
+                              Navigator.of(context).pop();
                               
-                              // Check if already on chat page
                               if (Get.currentRoute == '/chat') {
-                                // Delete and recreate controller
-                                Get.delete<ChatController>();
-                                Get.off(
-                                  () => const ChatView(),
-                                  binding: ChatBinding(),
-                                  arguments: sessionId,
-                                );
+                                // Already on chat, just reload with new session
+                                final chatController = Get.find<ChatController>();
+                                chatController.sessionId.value = sessionId;
+                                await chatController.loadSession();
                               } else {
                                 Get.toNamed('/chat', arguments: sessionId);
                               }

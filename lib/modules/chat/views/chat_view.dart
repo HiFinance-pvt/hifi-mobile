@@ -346,28 +346,25 @@ class ChatView extends GetView<ChatController> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: IgnorePointer(
-                              ignoring: false,
-                              child: TextField(
-                                controller: controller.messageController,
-                                focusNode: controller.messageFocusNode,
-                                onSubmitted: (_) => controller.sendMessage(),
-                                maxLines: null,
-                                textInputAction: TextInputAction.newline,
-                                enableInteractiveSelection: true,
-                                decoration: const InputDecoration(
-                                hintText: "Ask your question...",
-                                hintStyle: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFFC2C7D1),
-                                ),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(vertical: 12),
-                                ),
+                            child: TextField(
+                              controller: controller.messageController,
+                              focusNode: controller.messageFocusNode,
+                              onSubmitted: (_) => controller.sendMessage(),
+                              maxLines: null,
+                              textInputAction: TextInputAction.newline,
+                              enableInteractiveSelection: true,
+                              decoration: const InputDecoration(
+                              hintText: "Ask your question...",
+                              hintStyle: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFC2C7D1),
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 12),
                               ),
                             ),
                           ),

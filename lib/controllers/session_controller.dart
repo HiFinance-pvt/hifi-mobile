@@ -102,11 +102,18 @@ class SessionController extends GetxController {
       final sessionId = data['sessionId']?.toString();
       
       if (sessionId != null) {
+        // Add the new session to the list immediately
+        final newSession = {
+          'id': sessionId,
+          'session_name': 'New Chat',
+          'lastUpdateTime': (DateTime.now().millisecondsSinceEpoch / 1000).toString(),
+          ...data,
+        };
+        sessions.insert(0, newSession);
+        filteredSessions.insert(0, newSession);
+        
         // Set as active session
         setActiveSession(sessionId);
-        
-        // Mark that refresh is needed when drawer opens next time
-        needsRefresh.value = true;
         
         return sessionId;
       }

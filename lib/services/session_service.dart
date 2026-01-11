@@ -1,9 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 
 class SessionService {
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'https://api.hifi.click/api/v1/adk',
+    baseUrl: "https://api.hifi.click/api/v1/adk",
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
   ));
@@ -39,18 +40,29 @@ class SessionService {
       final token = await _getAuthToken();
       if (token == null) throw 'Not authenticated';
 
+      print('🔵 [SessionService] Attempting to connect to: ${_dio.options.baseUrl}/create-session');
+      print('🔵 [SessionService] Platform: ${Platform.isIOS ? "iOS" : "Android"}');
+      
       final response = await _dio.post(
         '/create-session',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
+
+      print('✅ [SessionService] Response status: ${response.statusCode}');
+      print('✅ [SessionService] Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         return response.data['data'] as Map<String, dynamic>;
       }
       throw 'Failed to create session';
     } on DioException catch (e) {
-      print('❌ [SessionService] Create session error: ${e.message}');
+      print('❌ [SessionService] DioException type: ${e.type}');
+      print('❌ [SessionService] Error message: ${e.message}');
+      print('❌ [SessionService] Response: ${e.response}');
       throw _handleDioError(e);
+    } catch (e) {
+      print('❌ [SessionService] Unknown error: $e');
+      rethrow;
     }
   }
 
@@ -59,6 +71,7 @@ class SessionService {
       final token = await _getAuthToken();
       if (token == null) throw 'Not authenticated';
 
+      print('🔵 [SessionService] Getting session: $sessionId');
       final response = await _dio.get(
         '/get-session',
         queryParameters: {'session_id': sessionId},
@@ -72,6 +85,7 @@ class SessionService {
       throw 'Failed to fetch session';
     } on DioException catch (e) {
       print('❌ [SessionService] Get session error: ${e.message}');
+      print('❌ [SessionService] Response data: ${e.response?.data}');
       throw _handleDioError(e);
     }
   }
