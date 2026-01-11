@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hifi/services/auth_service.dart';
+import 'package:hifi/services/news_service.dart';
 import 'package:hifi/controllers/session_controller.dart';
 import 'package:hifi/app/routes/app_routes.dart';
 
 class HomeController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
   final SessionController _sessionController = Get.find<SessionController>();
+  final NewsService _newsService = NewsService();
   late final FocusNode messageFocusNode;
   final messageController = TextEditingController();
 
@@ -14,6 +16,8 @@ class HomeController extends GetxController {
   final signInMethod = ''.obs;
   final authToken = ''.obs;
   final userName = 'John'.obs;
+  final newsItems = <Map<String, dynamic>>[].obs;
+  final isLoadingNews = false.obs;
 
   @override
   void onInit() {
@@ -23,6 +27,7 @@ class HomeController extends GetxController {
       print('🔍 HomeController: Focus changed - hasFocus: ${messageFocusNode.hasFocus}');
     });
     _loadUserInfo();
+    _loadNews();
   }
 
   @override
@@ -66,26 +71,6 @@ class HomeController extends GetxController {
       'isPositive': true,
     },
   ];
-  
-  final newsItems = [
-    {
-      'title': 'Why Bitcoiners Are Rooting for This Latest China Mining Ban to Finally, Actually Be Real',
-      'source': 'Decrypt',
-      'time': '12 hrs ago',
-    },
-    {
-      'title': 'Why Bitcoiners Are Rooting for This Latest China Mining Ban to Finally, Actually Be Real',
-      'source': 'Decrypt',
-      'time': '12 hrs ago',
-    },
-    {
-      'title': 'Why Bitcoiners Are Rooting for This Latest China Mining Ban to Finally, Actually Be Real',
-      'source': 'Decrypt',
-      'time': '12 hrs ago',
-    },
-  ];
-
-
 
   void _loadUserInfo() async {
     final user = _authService.currentUser;
@@ -112,6 +97,42 @@ class HomeController extends GetxController {
       } catch (e) {
         authToken.value = 'Token error';
       }
+    }
+  }
+
+  Future<void> _loadNews() async {
+    try {
+      isLoadingNews.value = true;
+      final news = await _newsService.getIndianFinanceNews();
+      newsItems.value = news;
+    } catch (e) {
+      print('❌ [HomeController] Failed to load news: $e');
+      // Set fallback news
+      newsItems.value = [
+        {
+          'title': 'Sensex rises 500 points on strong global cues',
+          'source': 'Economic Times',
+          'time': '2 hrs ago',
+          'image': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200',
+          'url': 'https://economictimes.indiatimes.com',
+        },
+        {
+          'title': 'RBI keeps repo rate unchanged at 6.5%',
+          'source': 'Business Standard',
+          'time': '5 hrs ago',
+          'image': 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=200',
+          'url': 'https://www.business-standard.com',
+        },
+        {
+          'title': 'Rupee strengthens against dollar',
+          'source': 'Mint',
+          'time': '8 hrs ago',
+          'image': 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=200',
+          'url': 'https://www.livemint.com',
+        },
+      ];
+    } finally {
+      isLoadingNews.value = false;
     }
   }
 

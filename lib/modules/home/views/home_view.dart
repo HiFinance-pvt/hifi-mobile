@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:hifi/modules/home/controllers/home_controller.dart';
 import 'package:hifi/shared/themes/app_theme.dart';
 import 'package:hifi/shared/widgets/sessions_drawer.dart';
@@ -385,8 +386,8 @@ class HomeView extends GetView<HomeController> {
                   child: Column(
                     children: [
                       _buildTrendingStocksCard(),
-                      const SizedBox(height: 11),
-                      _buildUsageCard(),
+                      // const SizedBox(height: 11),
+                      // _buildUsageCard(),
                     ],
                   ),
                 ),
@@ -408,7 +409,7 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 21),
 
                 // News List
-                Container(
+                Obx(() => Container(
                   margin: const EdgeInsets.symmetric(horizontal: 29),
                   padding: const EdgeInsets.all(23),
                   decoration: BoxDecoration(
@@ -416,16 +417,23 @@ class HomeView extends GetView<HomeController> {
                     border: Border.all(color: Colors.white, width: 1.5),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Column(
-                    children: List.generate(
-                      controller.newsItems.length,
-                      (index) => Padding(
-                        padding: EdgeInsets.only(bottom: index < 2 ? 11 : 0),
-                        child: _buildNewsItem(controller.newsItems[index]),
-                      ),
-                    ),
-                  ),
-                ),
+                  child: controller.newsItems.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: CircularProgressIndicator(color: Colors.white),
+                          ),
+                        )
+                      : Column(
+                          children: List.generate(
+                            controller.newsItems.length,
+                            (index) => Padding(
+                              padding: EdgeInsets.only(bottom: index < controller.newsItems.length - 1 ? 11 : 0),
+                              child: _buildNewsItem(controller.newsItems[index]),
+                            ),
+                          ),
+                        ),
+                )),
                   SizedBox(height: MediaQuery.of(context).padding.bottom + 40),
                 ],
               ),
@@ -674,63 +682,112 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildNewsItem(Map<String, dynamic> news) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                news['title'] as String,
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFF29303B),
-                  height: 1.4,
+    return GestureDetector(
+      onTap: () async {
+        final url = news['url'] as String?;
+        if (url != null && url.isNotEmpty) {
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  news['title'] as String,
+                  style: const TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1a1a1a),
+                    height: 1.4,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Text(
-                    news['source'] as String,
-                    style: const TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF29303B),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3461FD).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          news['source'] as String,
+                          style: const TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF3461FD),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    news['time'] as String,
-                    style: const TextStyle(
-                      fontFamily: 'Montserrat',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xFF29303B),
+                    const SizedBox(width: 8),
+                    Text(
+                      news['time'] as String,
+                      style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Container(
-          width: 81,
-          height: 64,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(4),
+          const SizedBox(width: 12),
+          Container(
+            width: 85,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade200,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: news['image'] != null && (news['image'] as String).isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      news['image'] as String,
+                      width: 85,
+                      height: 70,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Icon(Icons.article, size: 32, color: Colors.grey);
+                      },
+                    ),
+                  )
+                : const Icon(Icons.article, size: 32, color: Colors.grey),
           ),
-          child: const Icon(Icons.image, size: 32, color: Colors.grey),
-        ),
-      ],
+        ],
+      ),
+      ),
     );
   }
 }
