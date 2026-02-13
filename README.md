@@ -1,7 +1,7 @@
 # HiFi Mobile App
 
 A Flutter application with Firebase authentication and modern architecture patterns.
-
+APK: https://drive.google.com/file/d/1WiuefV2INd7Ja6oNA-gdhH2l61Loi3BN/view
 ## Architecture Overview
 
 ### State Management & Navigation
