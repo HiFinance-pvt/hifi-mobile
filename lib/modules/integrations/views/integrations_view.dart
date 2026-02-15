@@ -89,6 +89,7 @@ class IntegrationsView extends GetView<IntegrationsController> {
         borderRadius: BorderRadius.circular(19),
       ),
       child: Column(
+        
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -113,15 +114,38 @@ class IntegrationsView extends GetView<IntegrationsController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      integration['name']!,
-                      style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF29303B),
-                        height: 1.25,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          integration['name']!,
+                          style: const TextStyle(
+                            fontFamily: 'Montserrat',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF29303B),
+                            height: 1.25,
+                          ),
+                        ),
+                        if (integration['status'] == 'coming_soon') ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3461FD).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: const Text(
+                              'Coming Soon',
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF3461FD),
+                              ),
+                            ),
+                          ),
+                        ]
+                      ],
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -137,11 +161,14 @@ class IntegrationsView extends GetView<IntegrationsController> {
                   ],
                 ),
               ),
-              Obx(() => Switch(
-                value: controller.integrationStates[integration['name']]?.value ?? false,
-                onChanged: (value) => controller.toggleIntegration(integration['name']!),
-                activeColor: const Color(0xFF3461FD),
-              )),
+              Obx(() {
+                final state = controller.integrationStates[integration['name']];
+                return Switch(
+                  value: state?.value ?? false,
+                  onChanged: (value) => controller.toggleIntegration(integration['name']!),
+                  activeColor: const Color(0xFF3461FD),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 14),
