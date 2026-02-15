@@ -5,8 +5,8 @@ import 'dart:io';
 class SessionService {
   final Dio _dio = Dio(BaseOptions(
     baseUrl: "https://api.hifi.click/api/v1/adk",
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 60),
   ));
 
   Future<String?> _getAuthToken() async {
@@ -121,11 +121,21 @@ class SessionService {
       );
 
       if (response.statusCode == 200) {
+        print('🔥 [CHAT_API_RESPONSE] Complete JSON Response:');
+        print('🔥 ${response.data}');
+        print('🔥 [CHAT_API_RESPONSE] End of Response');
         return response.data as Map<String, dynamic>;
       }
       throw 'Failed to send message';
     } on DioException catch (e) {
       print('❌ [SessionService] Send message error: ${e.message}');
+      
+      // Log server response for debugging
+      if (e.response != null) {
+        print('❌ [SERVER_ERROR] Status: ${e.response!.statusCode}');
+        print('❌ [SERVER_ERROR] Response: ${e.response!.data}');
+      }
+      
       throw _handleDioError(e);
     }
   }

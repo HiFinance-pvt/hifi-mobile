@@ -89,7 +89,6 @@ class IntegrationsView extends GetView<IntegrationsController> {
         borderRadius: BorderRadius.circular(19),
       ),
       child: Column(
-        
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(

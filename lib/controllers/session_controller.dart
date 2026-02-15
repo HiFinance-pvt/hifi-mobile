@@ -57,6 +57,11 @@ class SessionController extends GetxController {
   Future<void> fetchSessions() async {
     try {
       isLoading.value = true;
+      
+      // Clear existing sessions to prevent duplicates
+      sessions.clear();
+      filteredSessions.clear();
+      
       final data = await _sessionService.listSessions();
       print('📋 [SessionController] Sessions data: $data');
       

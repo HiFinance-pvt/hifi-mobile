@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart';
 import 'package:hifi/services/session_service.dart';
+import 'package:hifi/shared/models/agent_response_parser.dart';
+import 'package:hifi/shared/models/agent_response.dart';
+import 'dart:convert';
 
 class ChatController extends GetxController {
   final SessionService _sessionService = SessionService();
@@ -77,7 +81,42 @@ class ChatController extends GetxController {
       sessionName.value = data['session_name']?.toString() ?? 'Chat Session';
       final events = data['events'] as List? ?? [];
       
-      messages.value = events.map((e) => e as Map<String, dynamic>).toList();
+      // Parse each message using the same logic as real-time
+      final parsedMessages = <Map<String, dynamic>>[];
+      
+      for (final event in events) {
+        final eventMap = event as Map<String, dynamic>;
+        
+        if (isUserMessage(eventMap)) {
+          // User messages - keep as is
+          parsedMessages.add(eventMap);
+        } else {
+          // Bot messages - apply agent parsing
+          final rawText = getMessageText(eventMap);
+          if (rawText.isNotEmpty) {
+            try {
+              final agentResponse = AgentResponseParser.parseResponse(rawText);
+              final parsedMessage = {
+                ...eventMap,
+                'content': {
+                  'parts': [{'text': agentResponse.message}]
+                },
+                'agentResponse': agentResponse,
+              };
+              parsedMessages.add(parsedMessage);
+              print('📋 [LOAD_SESSION] Parsed ${agentResponse.agentType} message');
+            } catch (e) {
+              // Fallback to original message
+              parsedMessages.add(eventMap);
+              print('📋 [LOAD_SESSION] Parse failed, using raw text');
+            }
+          } else {
+            parsedMessages.add(eventMap);
+          }
+        }
+      }
+      
+      messages.value = parsedMessages;
       
       // Scroll to bottom after loading messages
       Future.delayed(const Duration(milliseconds: 300), scrollToBottom);
@@ -139,8 +178,35 @@ class ChatController extends GetxController {
       // Call API
       final response = await _sessionService.sendMessage(sessionId.value, messageToSend);
       
-      // Parse bot response and add to messages
-      final botText = response['response']?['text']?.toString() ?? '';
+      print('📊 [CHAT_PARSING] Raw API Response:');
+      print('📊 $response');
+      
+      // Parse bot response using agent parser
+      String botText = '';
+      AgentResponse? agentResponse;
+      
+      try {
+        final responseText = response['response']?['text']?.toString() ?? '';
+        print('📊 [CHAT_PARSING] Raw response text: "$responseText"');
+        
+        if (responseText.isNotEmpty) {
+          // Use agent parser to detect type and extract data
+          agentResponse = AgentResponseParser.parseResponse(responseText);
+          botText = agentResponse.message;
+          
+          print('📊 [AGENT_DETECTION] Agent Type: ${agentResponse.agentType}');
+          print('📊 [AGENT_DETECTION] Response Type: ${agentResponse.responseType}');
+          print('📊 [AGENT_DETECTION] Has Questions: ${agentResponse.hasQuestions}');
+          print('📊 [AGENT_DETECTION] Has Progress: ${agentResponse.hasProgress}');
+          print('📊 [AGENT_DETECTION] Action: ${agentResponse.action}');
+          print('📊 [CHAT_PARSING] Final message: "$botText"');
+        }
+      } catch (e) {
+        print('📊 [CHAT_PARSING] Error parsing response: $e');
+        // Fallback to simple text extraction
+        botText = response['response']?['text']?.toString() ?? '';
+      }
+      
       if (botText.isNotEmpty) {
         final botMessage = {
           'author': 'hifi_agent',
@@ -148,16 +214,38 @@ class ChatController extends GetxController {
             'parts': [{'text': botText}]
           },
           'timestamp': DateTime.now().millisecondsSinceEpoch / 1000,
+          'agentResponse': agentResponse, // Store parsed response for UI
         };
+        print('📊 [CHAT_PARSING] Created bot message structure');
         messages.add(botMessage);
         
         // Scroll to bottom after bot reply
         Future.delayed(const Duration(milliseconds: 100), scrollToBottom);
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      print('❌ [CHAT_ERROR] Network error: ${e.message}');
+      String errorMessage = 'Network error';
+      
+      if (e.response?.statusCode == 500) {
+        errorMessage = 'Server error. The backend service is experiencing issues. Please try again later.';
+      } else if (e.type == DioExceptionType.receiveTimeout) {
+        errorMessage = 'Request timed out. The agent is taking longer than usual to respond.';
+      } else if (e.type == DioExceptionType.connectionTimeout) {
+        errorMessage = 'Connection timeout. Please check your internet connection.';
+      }
+      
       Get.snackbar(
-        'Error',
-        'Failed to send message',
+        'Connection Error',
+        errorMessage,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
+    } catch (e) {
+      print('📊 [CHAT_PARSING] Error parsing response: $e');
+      // Show user-friendly error message
+      Get.snackbar(
+        'Response Error',
+        'Failed to parse agent response',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
