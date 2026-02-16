@@ -61,16 +61,19 @@ class IntegrationsView extends GetView<IntegrationsController> {
               ),
               const SizedBox(height: 30),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 13),
-                  itemCount: controller.integrations.length,
-                  itemBuilder: (context, index) {
-                    final integration = controller.integrations[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 18),
-                      child: _buildIntegrationCard(integration),
-                    );
-                  },
+                child: RefreshIndicator(
+                  onRefresh: controller.refreshIntegrations,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 13),
+                    itemCount: controller.integrations.length,
+                    itemBuilder: (context, index) {
+                      final integration = controller.integrations[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 18),
+                        child: _buildIntegrationCard(integration),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -162,9 +165,11 @@ class IntegrationsView extends GetView<IntegrationsController> {
               ),
               Obx(() {
                 final state = controller.integrationStates[integration['name']];
+                final isCheckingKite = integration['name'] == 'Zerodha' && controller.isCheckingKiteStatus.value;
+                
                 return Switch(
                   value: state?.value ?? false,
-                  onChanged: (value) => controller.toggleIntegration(integration['name']!),
+                  onChanged: isCheckingKite ? null : (value) => controller.toggleIntegration(integration['name']!),
                   activeColor: const Color(0xFF3461FD),
                 );
               }),
