@@ -184,7 +184,7 @@ class HomeController extends GetxController {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Get.back(),
+                      onPressed: () => Navigator.of(Get.context!).pop(),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFF3461FD)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -205,7 +205,7 @@ class HomeController extends GetxController {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.back();
+                        Navigator.of(Get.context!).pop();
                         signOut();
                       },
                       style: ElevatedButton.styleFrom(

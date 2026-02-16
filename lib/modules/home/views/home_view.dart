@@ -87,42 +87,18 @@ class HomeView extends GetView<HomeController> {
                         child: const Icon(Icons.notifications_outlined, size: 20),
                       ),
                       const SizedBox(width: 12),
-                      // Profile with PRO badge
+                      // Logout Icon
                       GestureDetector(
                         onTap: () => controller.showLogoutDialog(),
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 25,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(Icons.person, size: 16),
-                            ),
-                            Positioned(
-                              right: -2,
-                              top: -2,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: const Text(
-                                  'PRO',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 6,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                    letterSpacing: 0.48,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white.withOpacity(0.3)),
+                          ),
+                          child: const Icon(Icons.logout, size: 20),
                         ),
                       ),
                     ],
@@ -130,92 +106,49 @@ class HomeView extends GetView<HomeController> {
                 ),
                 const SizedBox(height: 20),
 
-                // Avatar and Connected Badge
+                // Avatar and Greeting Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 29),
-                  child: Stack(
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          // Avatar
-                          Container(
-                            width: 57,
-                            height: 58,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(32),
+                      // Avatar
+                      Container(
+                        width: 57,
+                        height: 58,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                        child: const Icon(Icons.person, size: 32),
+                      ),
+                      const SizedBox(width: 15),
+                      // Greeting Text
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Obx(() => Text(
+                              'Hello, ${controller.userName.value}',
+                              style: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF161313),
+                                height: 1.3,
+                              ),
+                            )),
+                            const SizedBox(height: 5),
+                            const Text(
+                              'How may I help you?',
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF4F4A4A),
+                                height: 1.3,
+                              ),
                             ),
-                            child: const Icon(Icons.person, size: 32),
-                          ),
-                        ],
-                      ),
-                      // Connected Badge (right of avatar)
-                      Positioned(
-                        left: 73,
-                        top: 59,
-                        child: Container(
-                          height: 30,
-                          width: 85.714,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: const Color(0xFFC6C9CE)),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 8.571,
-                                height: 8.571,
-                                decoration: const BoxDecoration(
-                                  color: Colors.green,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text(
-                                'Connected',
-                                style: TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 37),
-
-                // Greeting Text
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 29),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Obx(() => Text(
-                        'Hello, ${controller.userName.value}',
-                        style: const TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF161313),
-                          height: 1.3,
-                        ),
-                      )),
-                      const SizedBox(height: 5),
-                      const Text(
-                        'How may I help you?',
-                        style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF4F4A4A),
-                          height: 1.3,
+                          ],
                         ),
                       ),
                     ],
@@ -237,20 +170,6 @@ class HomeView extends GetView<HomeController> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         const SizedBox(width: 21),
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 15),
-                          child: Icon(Icons.add, size: 20, color: Colors.grey),
-                        ),
-                        const SizedBox(width: 7),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Container(
-                            width: 1,
-                            height: 20,
-                            color: const Color(0xFFE0E0E0),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
                         Expanded(
                           child: IgnorePointer(
                             ignoring: false,
@@ -277,11 +196,6 @@ class HomeView extends GetView<HomeController> {
                             ),
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 15),
-                          child: Icon(Icons.mic, size: 18, color: Colors.grey),
-                        ),
-                        const SizedBox(width: 8),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10, right: 13),
                           child: GestureDetector(
@@ -356,10 +270,9 @@ class HomeView extends GetView<HomeController> {
                   padding: const EdgeInsets.symmetric(horizontal: 29),
                   child: Row(
                     children: [
-                      _buildServiceCard('Explore', Icons.explore_outlined),
+                      Expanded(child: _buildServiceCard('Explore', Icons.explore_outlined)),
                       const SizedBox(width: 8),
-                      _buildServiceCard('Integrations', Icons.extension_outlined),
-                      const Spacer(),
+                      Expanded(child: _buildServiceCard('Integrations', Icons.extension_outlined)),
                     ],
                   ),
                 ),
@@ -456,10 +369,9 @@ class HomeView extends GetView<HomeController> {
         }
       },
       child: Container(
-        width: 61,
         height: 61,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withOpacity(0.8),
           border: Border.all(color: Colors.white),
           borderRadius: BorderRadius.circular(5),
         ),

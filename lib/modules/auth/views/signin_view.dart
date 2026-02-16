@@ -54,7 +54,7 @@ class SignInView extends GetView<AuthController> {
                     const SizedBox(
                       width: 345,
                       child: Text(
-                        'It was popularised in the 1960s with the release of Letraset sheetscontaining Lorem Ipsum.',
+                        'Welcome back! Please sign in to your account to continue.',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 14,

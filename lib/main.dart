@@ -20,8 +20,7 @@ class HiFiApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'HiFi',
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       initialRoute: AppPages.initial,
       getPages: AppPages.routes,
       debugShowCheckedModeBanner: false,
